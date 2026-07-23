@@ -183,6 +183,7 @@ def export_report(report_name='Smart_Agriculture_Full_Report'):
         headers={"Content-disposition": f"attachment; filename={report_name}.csv"}
     )
 
+@app.route('/reports/dl/<report_name>')
 def download_report(report_name):
     return export_report(report_name)
 
