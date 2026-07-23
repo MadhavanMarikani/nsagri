@@ -155,6 +155,37 @@ def add_transaction():
 def reports():
     return render_template('reports.html')
 
+@app.route('/reports/export')
+@app.route('/reports/download/<report_name>')
+def export_report(report_name='Smart_Agriculture_Full_Report'):
+    conn = get_db()
+    crops = conn.execute('SELECT * FROM crops').fetchall()
+    transactions = conn.execute('SELECT * FROM transactions').fetchall()
+    conn.close()
+
+    csv_data = "SMART AGRICULTURE MANAGEMENT SYSTEM - REPORT\n"
+    csv_data += f"Report Type: {report_name.replace('_', ' ')}\n\n"
+    
+    csv_data += "--- CROPS DATA ---\n"
+    csv_data += "ID,Name,Status,Stage,Area (Acres),Expected Yield,Sowing Date,Fertilizers\n"
+    for c in crops:
+        csv_data += f"{c['id']},{c['name']},{c['status']},{c['stage']},{c['area_acres']},{c['expected_yield']},{c['sowing_date']},{c['fertilizers']}\n"
+        
+    csv_data += "\n--- RECENT TRANSACTIONS ---\n"
+    csv_data += "ID,Date,Description,Category,Type,Amount\n"
+    for t in transactions:
+        csv_data += f"{t['id']},{t['date_str']},{t['description']},{t['category']},{t['trans_type']},{t['amount']}\n"
+
+    from flask import Response
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-disposition": f"attachment; filename={report_name}.csv"}
+    )
+
+def download_report(report_name):
+    return export_report(report_name)
+
 @app.route('/about')
 def about():
     return render_template('about.html')

@@ -13,9 +13,9 @@
         <select class="btn-secondary">
             <option>01 May 2024 - 31 May 2024</option>
         </select>
-        <button class="btn-primary">
+        <a href="{{ url_for('export_report') }}" class="btn-primary">
             <i class="fa-solid fa-download"></i> Export Report
-        </button>
+        </a>
     </div>
 </div>
 
@@ -98,8 +98,8 @@
                 <td>May 2024</td>
                 <td>31 May 2024</td>
                 <td style="text-align: center;">
-                    <a href="#" style="color: #1b5e20; margin-right: 12px;"><i class="fa-regular fa-eye"></i></a>
-                    <a href="#" style="color: #1b5e20;"><i class="fa-solid fa-download"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Crop_Report') }}" target="_blank" style="color: #1b5e20; margin-right: 12px;" title="View Report"><i class="fa-regular fa-eye"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Crop_Report') }}" style="color: #1b5e20;" title="Download Report"><i class="fa-solid fa-download"></i></a>
                 </td>
             </tr>
             <tr style="border-bottom: 1px solid #f9f9f9;">
@@ -108,8 +108,8 @@
                 <td>May 2024</td>
                 <td>31 May 2024</td>
                 <td style="text-align: center;">
-                    <a href="#" style="color: #1b5e20; margin-right: 12px;"><i class="fa-regular fa-eye"></i></a>
-                    <a href="#" style="color: #1b5e20;"><i class="fa-solid fa-download"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Soil_Report') }}" target="_blank" style="color: #1b5e20; margin-right: 12px;" title="View Report"><i class="fa-regular fa-eye"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Soil_Report') }}" style="color: #1b5e20;" title="Download Report"><i class="fa-solid fa-download"></i></a>
                 </td>
             </tr>
             <tr style="border-bottom: 1px solid #f9f9f9;">
@@ -118,8 +118,8 @@
                 <td>May 2024</td>
                 <td>31 May 2024</td>
                 <td style="text-align: center;">
-                    <a href="#" style="color: #1b5e20; margin-right: 12px;"><i class="fa-regular fa-eye"></i></a>
-                    <a href="#" style="color: #1b5e20;"><i class="fa-solid fa-download"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Weather_Report') }}" target="_blank" style="color: #1b5e20; margin-right: 12px;" title="View Report"><i class="fa-regular fa-eye"></i></a>
+                    <a href="{{ url_for('download_report', report_name='Weather_Report') }}" style="color: #1b5e20;" title="Download Report"><i class="fa-solid fa-download"></i></a>
                 </td>
             </tr>
         </tbody>
