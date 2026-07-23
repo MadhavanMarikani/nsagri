@@ -93,7 +93,7 @@ def add_crop():
     area_acres = float(request.form['area_acres'])
     expected_yield = request.form['expected_yield']
     fertilizers = request.form['fertilizers']
-    image_url = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&auto=format&fit=crop'
+    image_url = request.form.get('image_url') or 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&auto=format&fit=crop'
     
     conn = get_db()
     conn.execute('''
