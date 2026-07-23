@@ -26,7 +26,14 @@
                 </span>
             </div>
             <div style="padding: 16px; flex-grow: 1;">
-                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--primary-dark);">{{ crop.name }}</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--primary-dark); margin: 0;">{{ crop.name }}</h3>
+                    <form action="{{ url_for('delete_crop', crop_id=crop.id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete {{ crop.name }}?');">
+                        <button type="submit" style="background: none; border: none; color: #e53935; cursor: pointer; font-size: 14px;" title="Delete Crop">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </form>
+                </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-secondary);">
                     <div><i class="fa-solid fa-layer-group" style="width: 18px; color: #2e7d32;"></i> <strong>Stage:</strong> {{ crop.stage }}</div>

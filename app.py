@@ -104,6 +104,14 @@ def add_crop():
     conn.close()
     return redirect(url_for('crops'))
 
+@app.route('/crops/delete/<int:crop_id>', methods=['POST'])
+def delete_crop(crop_id):
+    conn = get_db()
+    conn.execute('DELETE FROM crops WHERE id = ?', (crop_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('crops'))
+
 @app.route('/soil')
 def soil():
     conn = get_db()
