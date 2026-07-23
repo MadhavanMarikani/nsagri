@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Smart Agriculture Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; height: 100vh; display: flex; font-family: 'Inter', sans-serif; }
+        .left-banner {
+            flex: 1;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; padding: 40px; text-align: center;
+        }
+        .right-form { width: 520px; background: white; display: flex; flex-direction: column; justify-content: center; padding: 40px 48px; }
+        .form-group { margin-bottom: 16px; position: relative; }
+        .form-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #888; }
+        .form-input { width: 100%; padding: 12px 16px 12px 44px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-input:focus { border-color: #2e7d32; }
+        .btn-submit { width: 100%; padding: 14px; background: #1b5e20; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+    <div class="left-banner">
+        <div style="width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 16px;">
+            <i class="fa-solid fa-seedling"></i>
+        </div>
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 8px;">SMART AGRICULTURE</h2>
+        <p style="letter-spacing: 2px; text-transform: uppercase; font-size: 12px; opacity: 0.9; margin-bottom: 12px;">MANAGEMENT SYSTEM</p>
+        <p style="font-size: 14px; opacity: 0.8;">Grow Smarter, Farm Better</p>
+    </div>
+
+    <div class="right-form">
+        <h2 style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 6px;">Create New Account</h2>
+        <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 24px;">Fill in the details to register</p>
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <i class="fa-regular fa-user"></i>
+                <input type="text" name="full_name" class="form-input" placeholder="Full Name" required>
+            </div>
+
+            <div class="form-group">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+            </div>
+
+            <div class="form-group">
+                <i class="fa-solid fa-phone"></i>
+                <input type="text" name="phone" class="form-input" placeholder="Phone Number" required>
+            </div>
+
+            <div class="form-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" name="password" class="form-input" placeholder="Password" required>
+            </div>
+
+            <div class="form-group">
+                <i class="fa-solid fa-location-dot"></i>
+                <input type="text" name="farm_location" class="form-input" placeholder="Farm Location" required>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-user-plus"></i> REGISTER
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 24px; font-size: 14px;">
+            Already have an account? <a href="{{ url_for('login') }}" style="color: #2e7d32; font-weight: 600; text-decoration: none;">Login here</a>
+        </div>
+    </div>
+</body>
+</html>

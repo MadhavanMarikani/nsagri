@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Agriculture Management System{% endblock %}</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-seedling" style="font-size: 24px; color: #4caf50;"></i>
+                <div class="sidebar-title">
+                    SMART AGRICULTURE<br><span style="font-size: 11px; font-weight: 400; opacity: 0.8;">MANAGEMENT SYSTEM</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </a>
+                <a href="{{ url_for('crops') }}" class="nav-item {% if active_page == 'crops' %}active{% endif %}">
+                    <i class="fa-solid fa-wheat-awn"></i> Crops
+                </a>
+                <a href="{{ url_for('soil') }}" class="nav-item {% if active_page == 'soil' %}active{% endif %}">
+                    <i class="fa-solid fa-flask"></i> Soil
+                </a>
+                <a href="{{ url_for('weather') }}" class="nav-item {% if active_page == 'weather' %}active{% endif %}">
+                    <i class="fa-solid fa-cloud-sun"></i> Weather
+                </a>
+                <a href="{{ url_for('finance') }}" class="nav-item {% if active_page == 'finance' %}active{% endif %}">
+                    <i class="fa-solid fa-indian-rupee-sign"></i> Finance
+                </a>
+                <a href="{{ url_for('reports') }}" class="nav-item {% if active_page == 'reports' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-column"></i> Reports
+                </a>
+                <a href="{{ url_for('about') }}" class="nav-item {% if active_page == 'about' %}active{% endif %}">
+                    <i class="fa-solid fa-circle-info"></i> About Us
+                </a>
+                <a href="javascript:void(0)" onclick="showLogoutModal()" class="nav-item" style="margin-top: 16px; color: #ef5350;">
+                    <i class="fa-solid fa-power-off"></i> Logout
+                </a>
+            </nav>
+
+            <div class="sidebar-illustration"></div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <i class="fa-solid fa-bars menu-toggle"></i>
+                </div>
+                <div class="header-right">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge-count">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                        <span style="font-size: 14px; font-weight: 600;">Farmer</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 11px; color: var(--text-secondary);"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="page-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-icon-circle">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            <h2 style="font-size: 20px; margin-bottom: 8px;">Logout</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+                Are you sure you want to logout from<br><strong>Smart Agriculture Management System</strong>?
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn-secondary" style="flex: 1; justify-content: center;" onclick="hideLogoutModal()">Cancel</button>
+                <a href="{{ url_for('logout') }}" class="btn-primary" style="flex: 1; justify-content: center; background: #d32f2f;">
+                    <i class="fa-solid fa-power-off"></i> Yes, Logout
+                </a>
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 16px;">
+                <i class="fa-solid fa-lock" style="font-size: 10px;"></i> Your data is safe with us.
+            </p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

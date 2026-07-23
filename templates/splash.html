@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Agriculture Management System - Loading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(255,255,255,0.75), rgba(255,255,255,0.75)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .splash-card {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 48px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            max-width: 460px;
+            width: 90%;
+        }
+        .logo-circle {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #2e7d32;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: #2e7d32;
+            font-size: 48px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1b5e20;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #555;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        .tagline {
+            font-size: 15px;
+            color: #2e7d32;
+            font-weight: 500;
+            margin-bottom: 32px;
+        }
+        .spinner {
+            border: 4px solid #e8f5e9;
+            border-top: 4px solid #2e7d32;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-card">
+        <div class="logo-circle">
+            <i class="fa-solid fa-tractor"></i>
+        </div>
+        <div class="title">SMART AGRICULTURE</div>
+        <div class="subtitle">Management System</div>
+        <div style="width: 80px; height: 2px; background: #2e7d32; margin: 0 auto 16px;"></div>
+        <div class="tagline">Grow Smarter, Farm Better</div>
+        <div class="spinner"></div>
+        <div style="font-size: 13px; color: #777;">Loading...</div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            window.location.href = "{{ url_for('login') }}";
+        }, 2000);
+    </script>
+</body>
+</html>

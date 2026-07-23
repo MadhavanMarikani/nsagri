@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% set active_page = 'finance' %}
+
+{% block title %}Finance Details - Smart Agriculture Management System{% endblock %}
+
+{% block content %}
+<div class="page-header-row">
+    <div class="page-title">
+        <h1>Finance Details</h1>
+        <p>Track your income, expenses and manage your farm finances.</p>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <select class="btn-secondary">
+            <option>This Year</option>
+        </select>
+        <button class="btn-primary" onclick="openAddTransModal()">
+            <i class="fa-solid fa-plus"></i> Add Transaction
+        </button>
+    </div>
+</div>
+
+<!-- Financial KPI Cards -->
+<div class="grid-4" style="margin-bottom: 24px;">
+    <div class="card" style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; background: #e8f5e9; color: #2e7d32; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+        <div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Total Income</div>
+            <div style="font-size: 20px; font-weight: 700; color: #2e7d32;">₹ {{ "{:,.0f}".format(total_income) }}</div>
+            <div style="font-size: 11px; color: #2e7d32;">+18.5% vs last year</div>
+        </div>
+    </div>
+
+    <div class="card" style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; background: #ffebee; color: #e53935; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+        </div>
+        <div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Total Expenses</div>
+            <div style="font-size: 20px; font-weight: 700; color: #e53935;">₹ {{ "{:,.0f}".format(total_expenses) }}</div>
+            <div style="font-size: 11px; color: #e53935;">+10.3% vs last year</div>
+        </div>
+    </div>
+
+    <div class="card" style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; background: #e3f2fd; color: #1976d2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+            <i class="fa-solid fa-wallet"></i>
+        </div>
+        <div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Net Profit</div>
+            <div style="font-size: 20px; font-weight: 700; color: #1976d2;">₹ {{ "{:,.0f}".format(total_income - total_expenses) }}</div>
+            <div style="font-size: 11px; color: #1976d2;">+32.2% vs last year</div>
+        </div>
+    </div>
+
+    <div class="card" style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; background: #fff3e0; color: #ef6c00; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+            <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Total Transactions</div>
+            <div style="font-size: 20px; font-weight: 700;">36</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">This Year</div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Charts Row -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Income vs Expenses Overview</h3>
+        <canvas id="financeOverviewChart" height="110"></canvas>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; text-align: left;">Expense by Category</h3>
+        <div style="height: 180px; position: relative; display: flex; justify-content: center;">
+            <canvas id="expenseCategoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table & Top Income Sources -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+    <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Recent Transactions</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid #eee; color: var(--text-secondary);">
+                    <th style="padding: 10px 0;">Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th style="text-align: right;">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr style="border-bottom: 1px solid #f9f9f9;">
+                    <td style="padding: 12px 0;">{{ t.date_str }}</td>
+                    <td style="font-weight: 600;">{{ t.description }}</td>
+                    <td>{{ t.category }}</td>
+                    <td>
+                        <span class="status-pill {% if t.trans_type == 'Income' %}status-growing{% else %}status-matured{% endif %}">
+                            {{ t.trans_type }}
+                        </span>
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: {% if t.trans_type == 'Income' %}#2e7d32{% else %}#e53935{% endif %};">
+                        {% if t.trans_type == 'Income' %}+{% else %}-{% endif %} {{ "{:,.0f}".format(t.amount) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Top Income Sources</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+                    <span>Rice</span>
+                    <span>₹ 1,20,000 (48.9%)</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                    <div style="width: 48.9%; height: 100%; background: #2e7d32;"></div>
+                </div>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+                    <span>Maize</span>
+                    <span>₹ 60,000 (24.4%)</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                    <div style="width: 24.4%; height: 100%; background: #1976d2;"></div>
+                </div>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+                    <span>Vegetables</span>
+                    <span>₹ 40,000 (16.3%)</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                    <div style="width: 16.3%; height: 100%; background: #ef6c00;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div id="addTransModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 460px; text-align: left;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Add New Transaction</h2>
+        <form action="{{ url_for('add_transaction') }}" method="POST">
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 13px; font-weight: 600;">Description</label>
+                <input type="text" name="description" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="e.g. Sold Rice">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Type</label>
+                    <select name="trans_type" class="btn-secondary" style="width: 100%; margin-top: 4px;">
+                        <option>Income</option>
+                        <option>Expense</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Category</label>
+                    <input type="text" name="category" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="e.g. Fertilizers, Labor">
+                </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 13px; font-weight: 600;">Amount (₹)</label>
+                <input type="number" name="amount" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="5000">
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" class="btn-secondary" onclick="closeAddTransModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Transaction</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const ctxFinance = document.getElementById('financeOverviewChart').getContext('2d');
+    new Chart(ctxFinance, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [
+                { label: 'Income', data: [25, 30, 40, 24, 45, 25, 26, 25, 32, 22, 30, 25], backgroundColor: '#2e7d32' },
+                { label: 'Expenses', data: [12, 15, 25, 12, 20, 15, 12, 12, 10, 20, 12, 16], backgroundColor: '#e53935' }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } }
+    });
+
+    const ctxCat = document.getElementById('expenseCategoryChart').getContext('2d');
+    new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fertilizers', 'Seeds', 'Pesticides', 'Labor', 'Irrigation', 'Others'],
+            datasets: [{
+                data: [45000, 30000, 25000, 35000, 15000, 15000],
+                backgroundColor: ['#2e7d32', '#1976d2', '#f57c00', '#7b1fa2', '#00acc1', '#e53935']
+            }]
+        },
+        options: { responsive: true, cutout: '65%', plugins: { legend: { display: false } } }
+    });
+</script>
+{% endblock %}

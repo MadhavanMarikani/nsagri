@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% set active_page = 'crops' %}
+
+{% block title %}Crops Details - Smart Agriculture Management System{% endblock %}
+
+{% block content %}
+<div class="page-header-row">
+    <div class="page-title">
+        <h1>Crops Details</h1>
+        <p>Manage and monitor all your crop information.</p>
+    </div>
+    <button class="btn-primary" onclick="openAddCropModal()">
+        <i class="fa-solid fa-plus"></i> Add New Crop
+    </button>
+</div>
+
+<div style="display: grid; grid-template-columns: 3fr 1fr; gap: 24px;">
+    <!-- Crop Grid -->
+    <div class="grid-3">
+        {% for crop in crops %}
+        <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 160px; overflow: hidden; position: relative;">
+                <img src="{{ crop.image_url }}" alt="{{ crop.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <span class="status-pill status-{{ crop.status.lower() }}" style="position: absolute; top: 12px; right: 12px;">
+                    {{ crop.status }}
+                </span>
+            </div>
+            <div style="padding: 16px; flex-grow: 1;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--primary-dark);">{{ crop.name }}</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-secondary);">
+                    <div><i class="fa-solid fa-layer-group" style="width: 18px; color: #2e7d32;"></i> <strong>Stage:</strong> {{ crop.stage }}</div>
+                    <div><i class="fa-solid fa-ruler-combined" style="width: 18px; color: #1976d2;"></i> <strong>Area:</strong> {{ crop.area_acres }} Acre</div>
+                    <div><i class="fa-solid fa-wheat-field" style="width: 18px; color: #f57c00;"></i> <strong>Expected Yield:</strong> {{ crop.expected_yield }}</div>
+                    <div><i class="fa-regular fa-calendar" style="width: 18px; color: #7b1fa2;"></i> <strong>Sowing Date:</strong> {{ crop.sowing_date }}</div>
+                </div>
+
+                <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; background: #f9fbf9; padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 2px;">
+                        <i class="fa-solid fa-leaf" style="color: #2e7d32;"></i> <strong>Fertilizer:</strong>
+                    </div>
+                    <div style="font-size: 12px; font-weight: 600;">{{ crop.fertilizers }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Right Sidebar Summary Card -->
+    <div class="card" style="align-self: start;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Crop Summary</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 14px; background: #f4fbf4; padding: 12px; border-radius: 10px;">
+                <div style="width: 40px; height: 40px; background: #2e7d32; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Total Crops</div>
+                    <div style="font-size: 18px; font-weight: 700;">{{ crops|length }}</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px; background: #f0f7ff; padding: 12px; border-radius: 10px;">
+                <div style="width: 40px; height: 40px; background: #1976d2; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fa-solid fa-vector-square"></i>
+                </div>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Total Area</div>
+                    <div style="font-size: 18px; font-weight: 700;">10.8 Acre</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px; background: #fdf2ff; padding: 12px; border-radius: 10px;">
+                <div style="width: 40px; height: 40px; background: #7b1fa2; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Total Expected Yield</div>
+                    <div style="font-size: 18px; font-weight: 700;">181 Quintal</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px; background: #fff8e1; padding: 12px; border-radius: 10px;">
+                <div style="width: 40px; height: 40px; background: #f57c00; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Active Crops</div>
+                    <div style="font-size: 18px; font-weight: 700;">4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Crop Modal -->
+<div id="addCropModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 500px; text-align: left;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Add New Crop</h2>
+        <form action="{{ url_for('add_crop') }}" method="POST">
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 13px; font-weight: 600;">Crop Name</label>
+                <input type="text" name="name" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="e.g. Rice, Wheat">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Status</label>
+                    <select name="status" class="btn-secondary" style="width: 100%; margin-top: 4px;">
+                        <option>Growing</option>
+                        <option>Matured</option>
+                        <option>Flowering</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Stage</label>
+                    <input type="text" name="stage" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="e.g. Tillering">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Area (Acres)</label>
+                    <input type="number" step="0.1" name="area_acres" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="2.5">
+                </div>
+                <div>
+                    <label style="font-size: 13px; font-weight: 600;">Expected Yield</label>
+                    <input type="text" name="expected_yield" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="25 Quintal/Acre">
+                </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 13px; font-weight: 600;">Fertilizers Used</label>
+                <input type="text" name="fertilizers" class="btn-secondary" style="width: 100%; margin-top: 4px;" required placeholder="Urea, DAP, Potash">
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" class="btn-secondary" onclick="closeAddCropModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Crop</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

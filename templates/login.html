@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Smart Agriculture Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            font-family: 'Inter', sans-serif;
+        }
+        .left-banner {
+            flex: 1;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .right-form {
+            width: 500px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px 48px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #2e7d32;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #1b5e20;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-submit:hover {
+            background: #143d18;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-banner">
+        <div style="width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 16px;">
+            <i class="fa-solid fa-seedling"></i>
+        </div>
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 8px;">SMART AGRICULTURE</h2>
+        <p style="letter-spacing: 2px; text-transform: uppercase; font-size: 12px; opacity: 0.9; margin-bottom: 12px;">MANAGEMENT SYSTEM</p>
+        <p style="font-size: 14px; opacity: 0.8;">Grow Smarter, Farm Better</p>
+    </div>
+
+    <div class="right-form">
+        <h2 style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 6px;">Welcome Back!</h2>
+        <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 32px;">Login to your account</p>
+
+        {% if error %}
+            <div style="background: #ffebee; color: #c62828; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 16px;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" name="email" class="form-input" placeholder="Email Address" required value="farmer@agri.com">
+            </div>
+
+            <div class="form-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" name="password" class="form-input" placeholder="Password" required value="farmer123">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 13px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" checked> Remember Me
+                </label>
+                <a href="#" style="color: #2e7d32; text-decoration: none; font-weight: 600;">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-right-to-bracket"></i> LOGIN
+            </button>
+        </form>
+
+        <div style="text-align: center; margin: 24px 0; position: relative;">
+            <hr style="border: 0; border-top: 1px solid #eee;">
+            <span style="position: absolute; top: -10px; background: white; padding: 0 12px; font-size: 12px; color: #888; transform: translateX(-50%);">OR</span>
+        </div>
+
+        <div style="text-align: center;">
+            <p style="font-size: 14px; color: #555; margin-bottom: 12px;">Don't have an account?</p>
+            <a href="{{ url_for('register') }}" class="btn-secondary" style="display: inline-flex; width: 100%; justify-content: center; padding: 12px; font-weight: 600; color: #1b5e20; border-color: #1b5e20;">
+                <i class="fa-solid fa-user-plus"></i> REGISTER HERE
+            </a>
+        </div>
+    </div>
+</body>
+</html>
