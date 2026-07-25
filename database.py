@@ -38,11 +38,17 @@ def init_db():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', crops_data)
 
-        # Seed Soil Record
-        cursor.execute('''
+        # Seed Soil Records
+        soil_records_data = [
+            (user_id, 'Field 1 (North)', 'Loamy Soil', 6.8, 42.0, 36.2, 72.0, 18.5, 58.0, 320.0, 80.0, 'Good', '20 May 2024'),
+            (user_id, 'Field 2 (East)', 'Clayey Soil', 5.8, 55.0, 45.0, 90.0, 12.0, 40.0, 280.0, 70.0, 'Fair', '18 May 2024'),
+            (user_id, 'Field 3 (South)', 'Sandy Soil', 7.2, 22.0, 15.0, 30.0, 8.0, 26.0, 150.0, 38.0, 'Poor', '15 May 2024'),
+            (user_id, 'Field 4 (West)', 'Peaty Soil', 4.5, 65.0, 25.0, 50.0, 32.0, 85.0, 190.0, 48.0, 'Fair', '12 May 2024')
+        ]
+        cursor.executemany('''
             INSERT INTO soil_records (user_id, field_name, soil_type, ph_value, moisture_pct, nitrogen_val, nitrogen_pct, phosphorus_val, phosphorus_pct, potassium_val, potassium_pct, health_status, test_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (user_id, 'Field 1 (North)', 'Loamy Soil', 6.8, 42.0, 36.2, 72.0, 18.5, 58.0, 320.0, 80.0, 'Good', '20 May 2024'))
+        ''', soil_records_data)
 
         # Seed Weather Forecasts
         weather_data = [

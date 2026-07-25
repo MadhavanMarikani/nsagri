@@ -10,14 +10,14 @@
         <p>View and monitor your soil health and nutrient information.</p>
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
-        <select class="btn-secondary">
-            <option>Field 1 (North)</option>
-            <option>Field 2 (East)</option>
-            <option>Field 3 (South)</option>
+        <select class="btn-secondary" onchange="window.location.href='/soil?field=' + encodeURIComponent(this.value);">
+            {% for f in fields %}
+                <option value="{{ f }}" {% if selected_field == f %}selected{% endif %}>{{ f }}</option>
+            {% endfor %}
         </select>
-        <button class="btn-primary">
+        <a href="{{ url_for('test_soil', field_name=selected_field) }}" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-vial"></i> Test Soil
-        </button>
+        </a>
     </div>
 </div>
 
@@ -72,25 +72,43 @@
 <div class="grid-3" style="margin-bottom: 24px;">
     <div class="card" style="text-align: center;">
         <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Nitrogen (N)</h4>
-        <div style="font-size: 24px; font-weight: 700; color: #2e7d32; margin-bottom: 4px;">{{ soil.nitrogen_pct }}%</div>
-        <div style="font-size: 13px; font-weight: 600; color: #2e7d32;">Adequate</div>
-        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.nitrogen_val }} kg/ha</div>
+        <div style="font-size: 24px; font-weight: 700; color: #2e7d32; margin-bottom: 4px;">{{ soil.nitrogen_pct or 0 }}%</div>
+        {% if soil.nitrogen_pct >= 70 %}
+            <div style="font-size: 13px; font-weight: 600; color: #2e7d32;">Adequate</div>
+        {% elif soil.nitrogen_pct >= 40 %}
+            <div style="font-size: 13px; font-weight: 600; color: #ef6c00;">Moderate</div>
+        {% else %}
+            <div style="font-size: 13px; font-weight: 600; color: #e53935;">Deficient</div>
+        {% endif %}
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.nitrogen_val or 0 }} kg/ha</div>
         <div style="font-size: 11px; color: #777;">Optimal Range: 30 - 50 kg/ha</div>
     </div>
 
     <div class="card" style="text-align: center;">
         <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Phosphorus (P)</h4>
-        <div style="font-size: 24px; font-weight: 700; color: #ef6c00; margin-bottom: 4px;">{{ soil.phosphorus_pct }}%</div>
-        <div style="font-size: 13px; font-weight: 600; color: #ef6c00;">Moderate</div>
-        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.phosphorus_val }} kg/ha</div>
+        <div style="font-size: 24px; font-weight: 700; color: #ef6c00; margin-bottom: 4px;">{{ soil.phosphorus_pct or 0 }}%</div>
+        {% if soil.phosphorus_pct >= 70 %}
+            <div style="font-size: 13px; font-weight: 600; color: #2e7d32;">Adequate</div>
+        {% elif soil.phosphorus_pct >= 40 %}
+            <div style="font-size: 13px; font-weight: 600; color: #ef6c00;">Moderate</div>
+        {% else %}
+            <div style="font-size: 13px; font-weight: 600; color: #e53935;">Deficient</div>
+        {% endif %}
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.phosphorus_val or 0 }} kg/ha</div>
         <div style="font-size: 11px; color: #777;">Optimal Range: 20 - 40 kg/ha</div>
     </div>
 
     <div class="card" style="text-align: center;">
         <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Potassium (K)</h4>
-        <div style="font-size: 24px; font-weight: 700; color: #7b1fa2; margin-bottom: 4px;">{{ soil.potassium_pct }}%</div>
-        <div style="font-size: 13px; font-weight: 600; color: #7b1fa2;">Adequate</div>
-        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.potassium_val }} kg/ha</div>
+        <div style="font-size: 24px; font-weight: 700; color: #7b1fa2; margin-bottom: 4px;">{{ soil.potassium_pct or 0 }}%</div>
+        {% if soil.potassium_pct >= 70 %}
+            <div style="font-size: 13px; font-weight: 600; color: #7b1fa2;">Adequate</div>
+        {% elif soil.potassium_pct >= 40 %}
+            <div style="font-size: 13px; font-weight: 600; color: #ef6c00;">Moderate</div>
+        {% else %}
+            <div style="font-size: 13px; font-weight: 600; color: #e53935;">Deficient</div>
+        {% endif %}
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Available: {{ soil.potassium_val or 0 }} kg/ha</div>
         <div style="font-size: 11px; color: #777;">Optimal Range: 250 - 400 kg/ha</div>
     </div>
 </div>
@@ -117,7 +135,7 @@
         <div>
             <h4 style="font-size: 15px; font-weight: 700; color: #1b5e20;">Recommendations</h4>
             <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
-                Your soil health is good. To improve productivity, add organic compost and maintain moisture.
+                {{ recommendation }}
             </p>
         </div>
     </div>
@@ -133,21 +151,35 @@
         data: {
             labels: ['Nitrogen (N)', 'Phosphorus (P)', 'Potassium (K)'],
             datasets: [
-                { label: 'Your Soil', data: [36.2, 18.5, 320], backgroundColor: '#2e7d32' },
+                { label: 'Your Soil', data: [{{ soil.nitrogen_val or 0 }}, {{ soil.phosphorus_val or 0 }}, {{ soil.potassium_val or 0 }}], backgroundColor: '#2e7d32' },
                 { label: 'Optimal Range', data: [40, 30, 350], backgroundColor: '#e0e0e0' }
             ]
         },
         options: { responsive: true, plugins: { legend: { position: 'top' } } }
     });
 
+    // Populate line chart data dynamically from history records
+    const historyLabels = [];
+    const historyData = [];
+    {% for h in history %}
+        historyLabels.push("{{ h.test_date }}");
+        historyData.push(Math.round(({{ h.nitrogen_pct or 0 }} + {{ h.phosphorus_pct or 0 }} + {{ h.potassium_pct or 0 }}) / 3));
+    {% endfor %}
+    
+    // Fallback if no history exists yet
+    if (historyLabels.length === 0) {
+        historyLabels.push('No data');
+        historyData.push(0);
+    }
+
     const ctxHistory = document.getElementById('soilHistoryChart').getContext('2d');
     new Chart(ctxHistory, {
         type: 'line',
         data: {
-            labels: ['Apr 24', 'May 24', 'Jun 24', 'Jul 24', 'Aug 24', 'Sep 24'],
+            labels: historyLabels,
             datasets: [{
                 label: 'Soil Health Score',
-                data: [60, 75, 90, 70, 92, 80],
+                data: historyData,
                 borderColor: '#2e7d32',
                 backgroundColor: 'rgba(46, 125, 50, 0.1)',
                 fill: true,

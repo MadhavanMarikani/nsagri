@@ -8,11 +8,12 @@ A full-featured web application built with **Python (Flask)**, **SQLite**, **HTM
 
 - **Dashboard**: High-level overview with KPI cards (Active Crops, Weather, Profit/Loss), interactive charts (Farm Overview, Crop Status, Monthly Expenses vs Income), and recent activity feed.
 - **Crops Management**: View crop details, stage, area, expected yield, sowing date, and fertilizer usage. Add new crops dynamically with image URLs and delete existing crops.
-- **Soil Analysis**: Monitor soil parameters including pH levels, moisture percentage, NPK (Nitrogen, Phosphorus, Potassium) nutrient gauges, and recommendations.
-- **Weather Forecast**: 7-day weather predictions, temperature trends, rainfall statistics, and sunrise/sunset times.
+- **Soil Analysis**: Monitor soil parameters including pH levels, moisture percentage, NPK (Nitrogen, Phosphorus, Potassium) nutrient gauges, and recommendations. Includes a sensor test simulator.
+- **Weather Forecast**: 7-day weather predictions, temperature trends, rainfall statistics, and sunrise/sunset times with live forecast refresh simulator.
 - **Finance Tracking**: Income & expense logging, net profit calculation, transaction history, expense breakdown by category, and top income sources.
-- **Reports & Analytics**: Generate and export dynamic downloadable CSV reports (`Smart_Agriculture_Full_Report.csv`, `Crop_Report.csv`, `Soil_Report.csv`, `Weather_Report.csv`).
+- **Reports & Analytics**: Generate and export dynamic downloadable **PDF reports** (`Smart_Agriculture_Full_Report.pdf`, `Crop_Report.pdf`, `Soil_Report.pdf`, `Weather_Report.pdf`) styled with header banners and tables.
 - **User Authentication**: Login, Registration, and Session management with secure SQLite database backing.
+- **Developer Database Panel**: A hidden CRUD admin page (`/database`) to view, add, edit, and delete rows in any database table directly.
 
 ---
 
@@ -89,7 +90,7 @@ nsagri/
 │   └── js/
 │       └── main.js          # Modal popups & UI interaction handlers
 └── templates/
-    ├── base.html            # Sidebar navigation & header layout
+    ├── base.html            # Sidebar navigation layout
     ├── splash.html          # Splash screen loader
     ├── login.html           # Login page
     ├── register.html        # Registration page
@@ -98,7 +99,8 @@ nsagri/
     ├── soil.html            # Soil Health & Analysis
     ├── weather.html         # Weather Forecast & Trends
     ├── finance.html         # Finance Details & Transactions
-    ├── reports.html         # Detailed Reports & Export CSV
+    ├── reports.html         # Detailed Reports page
+    ├── database.html        # Developer Database Viewer/Editor (CRUD)
     └── about.html           # About Us page
 ```
 
@@ -106,7 +108,7 @@ nsagri/
 
 ## 💻 Tech Stack
 
-- **Backend**: Python 3, Flask
+- **Backend**: Python 3, Flask, FPDF2 (PDF generation)
 - **Database**: SQLite3
 - **Frontend**: HTML5, Vanilla CSS3, JavaScript (ES6+), FontAwesome Icons
 - **Data Visualization**: Chart.js

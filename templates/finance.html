@@ -60,7 +60,7 @@
         </div>
         <div>
             <div style="font-size: 11px; color: var(--text-secondary);">Total Transactions</div>
-            <div style="font-size: 20px; font-weight: 700;">36</div>
+            <div style="font-size: 20px; font-weight: 700;">{{ transactions|length }}</div>
             <div style="font-size: 11px; color: var(--text-secondary);">This Year</div>
         </div>
     </div>
@@ -118,33 +118,21 @@
     <div class="card">
         <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">Top Income Sources</h3>
         <div style="display: flex; flex-direction: column; gap: 16px;">
-            <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                    <span>Rice</span>
-                    <span>₹ 1,20,000 (48.9%)</span>
+            {% if income_sources %}
+                {% for source in income_sources %}
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
+                        <span>{{ source.category }}</span>
+                        <span>₹ {{ "{:,.0f}".format(source.total) }} ({{ source.percentage }}%)</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ source.percentage }}%; height: 100%; background: {% if loop.index == 1 %}#2e7d32{% elif loop.index == 2 %}#1976d2{% else %}#ef6c00{% endif %};"></div>
+                    </div>
                 </div>
-                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                    <div style="width: 48.9%; height: 100%; background: #2e7d32;"></div>
-                </div>
-            </div>
-            <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                    <span>Maize</span>
-                    <span>₹ 60,000 (24.4%)</span>
-                </div>
-                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                    <div style="width: 24.4%; height: 100%; background: #1976d2;"></div>
-                </div>
-            </div>
-            <div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                    <span>Vegetables</span>
-                    <span>₹ 40,000 (16.3%)</span>
-                </div>
-                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                    <div style="width: 16.3%; height: 100%; background: #ef6c00;"></div>
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px 0;">No income records found</div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -186,27 +174,43 @@
 
 {% block scripts %}
 <script>
+    // Modal controls
+    function openAddTransModal() {
+        document.getElementById('addTransModal').style.display = 'flex';
+    }
+    function closeAddTransModal() {
+        document.getElementById('addTransModal').style.display = 'none';
+    }
+
+    // Chart datasets from dynamic database calculations
+    const monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyIncomeData = {{ monthly_income|tojson }};
+    const monthlyExpenseData = {{ monthly_expense|tojson }};
+
     const ctxFinance = document.getElementById('financeOverviewChart').getContext('2d');
     new Chart(ctxFinance, {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: monthlyLabels,
             datasets: [
-                { label: 'Income', data: [25, 30, 40, 24, 45, 25, 26, 25, 32, 22, 30, 25], backgroundColor: '#2e7d32' },
-                { label: 'Expenses', data: [12, 15, 25, 12, 20, 15, 12, 12, 10, 20, 12, 16], backgroundColor: '#e53935' }
+                { label: 'Income', data: monthlyIncomeData, backgroundColor: '#2e7d32' },
+                { label: 'Expenses', data: monthlyExpenseData, backgroundColor: '#e53935' }
             ]
         },
         options: { responsive: true, plugins: { legend: { position: 'top' } } }
     });
 
+    const expenseCategoryLabels = [{% for ec in expense_categories %}"{{ ec.category }}"{% if not loop.last %},{% endif %}{% endfor %}];
+    const expenseCategoryData = [{% for ec in expense_categories %}{{ ec.total }}{% if not loop.last %},{% endif %}{% endfor %}];
+
     const ctxCat = document.getElementById('expenseCategoryChart').getContext('2d');
     new Chart(ctxCat, {
         type: 'doughnut',
         data: {
-            labels: ['Fertilizers', 'Seeds', 'Pesticides', 'Labor', 'Irrigation', 'Others'],
+            labels: expenseCategoryLabels,
             datasets: [{
-                data: [45000, 30000, 25000, 35000, 15000, 15000],
-                backgroundColor: ['#2e7d32', '#1976d2', '#f57c00', '#7b1fa2', '#00acc1', '#e53935']
+                data: expenseCategoryData,
+                backgroundColor: ['#2e7d32', '#1976d2', '#f57c00', '#7b1fa2', '#00acc1', '#e53935', '#ef5350', '#8d6e63']
             }]
         },
         options: { responsive: true, cutout: '65%', plugins: { legend: { display: false } } }

@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% set active_page = 'database' %}
+
+{% block title %}Database Manager - Smart Agriculture Management System{% endblock %}
+
+{% block content %}
+<div class="page-header-row">
+    <div class="page-title">
+        <h1>Database Manager</h1>
+        <p>Direct access to SQLite database tables for viewing, inserting, updating, and deleting data.</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;">
+    <!-- Left Column: Tables List -->
+    <div class="card" style="padding: 16px;">
+        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-database"></i> SQLite Tables
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% for t in tables %}
+            <a href="{{ url_for('database_viewer', table=t.name) }}" 
+               style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; 
+                      {% if selected_table == t.name %}
+                      background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;
+                      {% else %}
+                      background: #f9fbf9; color: var(--text-main); border: 1px solid #edf2f7;
+                      {% endif %}">
+                <span><i class="fa-solid fa-table" style="margin-right: 8px; opacity: 0.7;"></i> {{ t.name }}</span>
+                <span style="background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 20px; font-size: 11px;">{{ t.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right Column: Data View -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% if selected_table %}
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 12px;">
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; margin: 0;">
+                        <i class="fa-solid fa-table-list"></i> Table: {{ selected_table }}
+                    </h2>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                        Structure: {{ columns|map(attribute='name')|list|join(', ') }}
+                    </p>
+                </div>
+                <button class="btn-primary" onclick="openAddRowModal()">
+                    <i class="fa-solid fa-plus"></i> Add Row
+                </button>
+            </div>
+
+            <!-- Table Rows List -->
+            <div style="overflow-x: auto; width: 100%; border: 1px solid #eee; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead>
+                        <tr style="background: #f9fbf9; border-bottom: 2px solid #eee; color: var(--text-secondary);">
+                            {% for col in columns %}
+                            <th style="padding: 12px 16px; font-weight: 700;">
+                                {{ col.name }} 
+                                <span style="font-size: 10px; font-weight: 400; opacity: 0.6; display: block;">{{ col.type }}</span>
+                            </th>
+                            {% endfor %}
+                            <th style="padding: 12px 16px; text-align: center; font-weight: 700; width: 100px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if rows %}
+                            {% for row in rows %}
+                            <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.2s;" onmouseover="this.style.background='#fcfdfc'" onmouseout="this.style.background='none'">
+                                {% for col in columns %}
+                                <td style="padding: 12px 16px; font-family: monospace; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    {% if row[col.name] is none %}
+                                        <em style="color: #bbb; font-size: 11px;">NULL</em>
+                                    {% else %}
+                                        {{ row[col.name] }}
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                                <td style="padding: 12px 16px; text-align: center;">
+                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                        <button class="btn-secondary" style="padding: 6px 10px; border-radius: 6px; font-size: 12px;" 
+                                                onclick="openEditRowModal('{{ row[pk_col] }}')">
+                                            <i class="fa-solid fa-pen" style="color: var(--primary-light);"></i>
+                                        </button>
+                                        <form action="{{ url_for('database_delete', table_name=selected_table, row_id=row[pk_col]) }}" method="POST" 
+                                              style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete this row?');">
+                                            <button type="submit" class="btn-secondary" style="padding: 6px 10px; border-radius: 6px; font-size: 12px; border-color: #ffebee;">
+                                                <i class="fa-solid fa-trash-can" style="color: #e53935;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="{{ columns|length + 1 }}" style="padding: 32px; text-align: center; color: var(--text-secondary);">
+                                    <i class="fa-regular fa-folder-open" style="font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                                    No records found in table. Click "Add Row" to insert data.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="padding: 48px; text-align: center; background: #fff;">
+            <i class="fa-solid fa-database" style="font-size: 64px; color: var(--primary-light); opacity: 0.3; margin-bottom: 20px;"></i>
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;">Select a Table</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); max-width: 400px; margin: 0 auto 24px;">
+                Choose one of the database tables from the list on the left to view, modify, or insert live agriculture information.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if selected_table %}
+<!-- Add Row Modal -->
+<div id="addRowModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 500px; text-align: left;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-circle-plus" style="color: var(--primary-light);"></i> Insert New Row
+        </h2>
+        <form action="{{ url_for('database_add', table_name=selected_table) }}" method="POST">
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;">
+                {% for col in columns if not col.pk %}
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px;">
+                        {{ col.name }} <span style="font-size: 11px; font-weight: 400; opacity: 0.6;">({{ col.type }})</span>
+                    </label>
+                    {% if 'INT' in col.type or 'REAL' in col.type or 'NUMERIC' in col.type %}
+                    <input type="number" step="any" name="{{ col.name }}" class="btn-secondary" style="width: 100%;">
+                    {% else %}
+                    <input type="text" name="{{ col.name }}" class="btn-secondary" style="width: 100%;">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 16px;">
+                <button type="button" class="btn-secondary" onclick="closeAddRowModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Insert Record</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Row Modal -->
+<div id="editRowModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 500px; text-align: left;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-pen" style="color: var(--primary-light);"></i> Edit Record (ID: <span id="editRowTitleId"></span>)
+        </h2>
+        <form id="editRowForm" action="" method="POST">
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 8px; margin-bottom: 20px;">
+                {% for col in columns if not col.pk %}
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px;">
+                        {{ col.name }} <span style="font-size: 11px; font-weight: 400; opacity: 0.6;">({{ col.type }})</span>
+                    </label>
+                    {% if 'INT' in col.type or 'REAL' in col.type or 'NUMERIC' in col.type %}
+                    <input type="number" step="any" name="{{ col.name }}" id="edit_input_{{ col.name }}" class="btn-secondary" style="width: 100%;">
+                    {% else %}
+                    <input type="text" name="{{ col.name }}" id="edit_input_{{ col.name }}" class="btn-secondary" style="width: 100%;">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 16px;">
+                <button type="button" class="btn-secondary" onclick="closeEditRowModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Update Record</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Store table row data globally to avoid unescaped HTML attribute characters
+    const tableData = {};
+    {% if rows %}
+        {% for row in rows %}
+            tableData["{{ row[pk_col] }}"] = {
+                {% for col in columns if not col.pk %}
+                    "{{ col.name }}": {{ row[col.name]|tojson|safe }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            };
+        {% endfor %}
+    {% endif %}
+
+    function openAddRowModal() {
+        const modal = document.getElementById('addRowModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeAddRowModal() {
+        const modal = document.getElementById('addRowModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function openEditRowModal(rowId) {
+        document.getElementById('editRowTitleId').innerText = rowId;
+        
+        const form = document.getElementById('editRowForm');
+        form.action = `/database/edit/{{ selected_table }}/` + rowId;
+        
+        const rowData = tableData[rowId] || {};
+        
+        // Loop through keys and set values in form inputs
+        for (const [key, value] of Object.entries(rowData)) {
+            const input = document.getElementById(`edit_input_${key}`);
+            if (input) {
+                input.value = value !== null ? value : '';
+            }
+        }
+        
+        document.getElementById('editRowModal').style.display = 'flex';
+    }
+
+    function closeEditRowModal() {
+        const modal = document.getElementById('editRowModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    // Modal click-outside handler override
+    const originalOnClick = window.onclick;
+    window.onclick = function(event) {
+        if (originalOnClick) originalOnClick(event);
+        
+        const addRowModal = document.getElementById('addRowModal');
+        const editRowModal = document.getElementById('editRowModal');
+        if (event.target === addRowModal) closeAddRowModal();
+        if (event.target === editRowModal) closeEditRowModal();
+    };
+</script>
+{% endblock %}
