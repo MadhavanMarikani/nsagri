@@ -37,3 +37,23 @@ window.onclick = function(event) {
     if (event.target === cropModal) closeAddCropModal();
     if (event.target === transModal) closeAddTransModal();
 };
+
+// Mobile Sidebar Toggle
+function toggleSidebar(event) {
+    event.stopPropagation();
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+}
+
+// Close sidebar on click outside
+document.addEventListener('click', function(event) {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.mobile-toggle');
+    if (sidebar && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(event.target) && (!toggleBtn || !toggleBtn.contains(event.target))) {
+            sidebar.classList.remove('active');
+        }
+    }
+});
